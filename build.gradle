@@ -1,0 +1,130 @@
+plugins {
+  id 'java-library'
+  id 'maven-publish'
+  id 'jacoco'
+  id 'eclipse'
+  id 'org.sonarqube' version '6.3.1.5724'
+  id 'org.owasp.dependencycheck' version '12.1.3'
+}
+
+group = 'nuwcnpt70'
+ext {
+    vLabel = "2.2.2." + System.getenv().getOrDefault('CI_PIPELINE_IID', '9999')
+    tagName = System.getenv().getOrDefault('TAG_NAME', vLabel) 
+}
+version = tagName.startsWith('version-') ? tagName.substring(8) : tagName
+
+repositories {    
+	maven {
+	   url = "https://jogamp.org/deployment/maven/"
+	   name = "jogamp"
+	   content {
+		  excludeGroup "nuwcnpt70"
+	   }
+	}    
+
+	maven {
+	   url = "https://repo.maven.apache.org/maven2/"
+	   name = "maven central"
+	   content {
+		  excludeGroup "nuwcnpt70"
+	   }
+	}
+
+    flatDir {
+        dirs rootProject.projectDir.getPath() + '/lib'
+    }        
+    
+    println " checking the following for compile dependencies "
+    project.repositories.forEach { 
+        print " ---- " + it.getName()
+        if(it instanceof MavenArtifactRepository) {        
+            println " [" + it.getUrl() + "]" 
+        } else if(it instanceof FlatDirectoryArtifactRepository) {
+            println " [" + Arrays.deepToString(it.getDirs().toArray()) + "]"
+        }
+        else {
+            println " []" 
+        }           
+    }    
+}
+
+dependencies {
+    modules {
+        module("java3d:vecmath"){
+            replacedBy("javax.vecmath:vecmath")
+        }
+    }
+
+    compileOnly 'unknown:gdal:'
+    implementation 'org.apache.logging.log4j:log4j-api:2.+',
+            'org.slf4j:slf4j-api:2.+',
+            'org.apache.logging.log4j:log4j-jcl:2.+',
+            'org.apache.logging.log4j:log4j-jul:2.+',
+            'org.jogamp.jogl:jogl-all:2.5+',
+            'org.jogamp.jogl:jogl-all:2.5+:natives-linux-amd64',
+            'org.jogamp.jogl:jogl-all:2.5+:natives-macosx-universal',
+            'org.jogamp.jogl:jogl-all:2.5+:natives-windows-amd64',            
+            'org.jogamp.gluegen:gluegen-rt:2.5+',
+            'org.jogamp.gluegen:gluegen-rt:2.5+:natives-linux-amd64',
+            'org.jogamp.gluegen:gluegen-rt:2.5+:natives-macosx-universal',
+            'org.jogamp.gluegen:gluegen-rt:2.5+:natives-windows-amd64'            
+            
+    testCompileOnly 'junit:junit:4.13.+'
+    testImplementation(platform('org.junit:junit-bom:5.12.0'))
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    runtimeOnly 'org.apache.logging.log4j:log4j-slf4j2-impl:2.+'        
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher',
+                    'org.junit.vintage:junit-vintage-engine'
+    
+    jacocoAgent 'org.jacoco:org.jacoco.agent:0.8.12' 
+}
+
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }    
+}
+            
+jar{
+  group = 'library'
+  archiveBaseName='worldwind'
+  from sourceSets.main.output
+  exclude("gov/nasa/worldwindx/**/*")
+  manifest {
+    attributes( "Built-By": System.properties['user.name'])
+  } 
+}
+
+// publishing {
+//     publications {
+//         mavenJava(MavenPublication) {
+//             versionMapping {
+//                 usage('java-api') {
+//                     fromResolutionOf('runtimeClasspath')
+//                 }
+//                 usage('java-runtime') {
+//                     fromResolutionResult()
+//                 }
+//             }        
+//             artifactId = 'worldwind'          
+//             groupId = project.group
+//             from components.java
+//         }
+//     }
+//     repositories {
+//         maven {
+//             url = "https://spork.navsea.navy.mil/api/v4/projects/12334/packages/maven"
+//             credentials(HttpHeaderCredentials) {
+//                 name = 'Job-Token'
+//                 value = System.getenv("CI_JOB_TOKEN")
+//             }
+//             authentication {
+//                 header(HttpHeaderAuthentication)
+//             }            
+//         }
+//     }   
+// }

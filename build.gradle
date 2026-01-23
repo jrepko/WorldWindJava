@@ -98,33 +98,3 @@ jar{
     attributes( "Built-By": System.properties['user.name'])
   } 
 }
-
-// publishing {
-//     publications {
-//         mavenJava(MavenPublication) {
-//             versionMapping {
-//                 usage('java-api') {
-//                     fromResolutionOf('runtimeClasspath')
-//                 }
-//                 usage('java-runtime') {
-//                     fromResolutionResult()
-//                 }
-//             }        
-//             artifactId = 'worldwind'          
-//             groupId = project.group
-//             from components.java
-//         }
-//     }
-//     repositories {
-//         maven {
-//             url = "https://spork.navsea.navy.mil/api/v4/projects/12334/packages/maven"
-//             credentials(HttpHeaderCredentials) {
-//                 name = 'Job-Token'
-//                 value = System.getenv("CI_JOB_TOKEN")
-//             }
-//             authentication {
-//                 header(HttpHeaderAuthentication)
-//             }            
-//         }
-//     }   
-// }

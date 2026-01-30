@@ -7,7 +7,7 @@ plugins {
   id 'org.owasp.dependencycheck' version '12.1.3'
 }
 
-group = 'nuwcnpt70'
+group = 'uranium'
 ext {
     vLabel = "2.2.2." + System.getenv().getOrDefault('CI_PIPELINE_IID', '9999')
     tagName = System.getenv().getOrDefault('TAG_NAME', vLabel) 
@@ -19,7 +19,7 @@ repositories {
 	   url = "https://jogamp.org/deployment/maven/"
 	   name = "jogamp"
 	   content {
-		  excludeGroup "nuwcnpt70"
+		  excludeGroup "uranium"
 	   }
 	}    
 
@@ -27,7 +27,7 @@ repositories {
 	   url = "https://repo.maven.apache.org/maven2/"
 	   name = "maven central"
 	   content {
-		  excludeGroup "nuwcnpt70"
+		  excludeGroup "uranium"
 	   }
 	}
 

@@ -12,7 +12,7 @@ pluginManagement {
 		maven {
 			url "https://plugins.gradle.org/m2/"
 			content {
-				excludeGroup "nuwcnpt70"
+				excludeGroup "uranium"
 			}
 		}
     }
